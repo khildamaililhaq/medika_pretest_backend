@@ -75,43 +75,6 @@ paths:
                 type: array
                 items:
                   type: string
-  "/oauth/revoke":
-    post:
-      summary: Revoke Token
-      tags:
-      - Authentication
-      consumes:
-      - application/x-www-form-urlencoded
-      produces:
-      - application/json
-      parameters:
-      - name: token
-        in: formData
-        type: string
-        required: true
-      - name: client_id
-        in: formData
-        type: string
-        required: false
-      - name: client_secret
-        in: formData
-        type: string
-        required: false
-      responses:
-        '200':
-          description: token revoked
-          schema:
-            type: object
-            properties: {}
-        '403':
-          description: forbidden
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              error_description:
-                type: string
   "/oauth/token/issue":
     post:
       summary: Issue Token
@@ -140,10 +103,12 @@ paths:
         in: formData
         type: string
         required: true
+        default: 3Y4wAY0SvABC4YYEtzw_6bjnyYUiwypTVVGQvVu7Yes
       - name: client_secret
         in: formData
         type: string
         required: true
+        default: u8SnKuATY7GoWajXak_vV6olrdzOJM5IGJ7bLtgIUX4
       responses:
         '200':
           description: token issued
@@ -166,6 +131,45 @@ paths:
                 type: integer
         '401':
           description: unauthorized
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              error_description:
+                type: string
+  "/oauth/revoke":
+    post:
+      summary: Revoke Token
+      tags:
+      - Authentication
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: token
+        in: formData
+        type: string
+        required: true
+      - name: client_id
+        in: formData
+        type: string
+        required: false
+        default: 3Y4wAY0SvABC4YYEtzw_6bjnyYUiwypTVVGQvVu7Yes
+      - name: client_secret
+        in: formData
+        type: string
+        required: false
+        default: u8SnKuATY7GoWajXak_vV6olrdzOJM5IGJ7bLtgIUX4
+      responses:
+        '200':
+          description: token revoked
+          schema:
+            type: object
+            properties: {}
+        '403':
+          description: forbidden
           schema:
             type: object
             properties:
@@ -197,10 +201,12 @@ paths:
         in: formData
         type: string
         required: true
+        default: 3Y4wAY0SvABC4YYEtzw_6bjnyYUiwypTVVGQvVu7Yes
       - name: client_secret
         in: formData
         type: string
         required: true
+        default: u8SnKuATY7GoWajXak_vV6olrdzOJM5IGJ7bLtgIUX4
       responses:
         '200':
           description: token refreshed

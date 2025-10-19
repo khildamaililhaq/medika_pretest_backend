@@ -10,8 +10,8 @@ RSpec.describe "Oauth::Tokens", type: :request do
       parameter name: :grant_type, in: :formData, type: :string, required: true, enum: [ 'password' ]
       parameter name: :email, in: :formData, type: :string, required: true
       parameter name: :password, in: :formData, type: :string, required: true
-      parameter name: :client_id, in: :formData, type: :string, required: true
-      parameter name: :client_secret, in: :formData, type: :string, required: true
+      parameter name: :client_id, in: :formData, type: :string, required: true, default: Doorkeeper::Application.first&.uid
+      parameter name: :client_secret, in: :formData, type: :string, required: true, default: Doorkeeper::Application.first&.secret
 
       response '200', 'token issued' do
         schema type: :object,
@@ -67,8 +67,8 @@ RSpec.describe "Oauth::Tokens", type: :request do
         produces 'application/json'
 
         parameter name: :token, in: :formData, type: :string, required: true
-        parameter name: :client_id, in: :formData, type: :string, required: false
-        parameter name: :client_secret, in: :formData, type: :string, required: false
+        parameter name: :client_id, in: :formData, type: :string, required: false, default: Doorkeeper::Application.first&.uid
+        parameter name: :client_secret, in: :formData, type: :string, required: false, default: Doorkeeper::Application.first&.secret
 
         response '200', 'token revoked' do
           schema type: :object,
@@ -112,8 +112,8 @@ RSpec.describe "Oauth::Tokens", type: :request do
 
       parameter name: :grant_type, in: :formData, type: :string, required: true, enum: [ 'refresh_token' ]
       parameter name: :refresh_token, in: :formData, type: :string, required: true
-      parameter name: :client_id, in: :formData, type: :string, required: true
-      parameter name: :client_secret, in: :formData, type: :string, required: true
+      parameter name: :client_id, in: :formData, type: :string, required: true, default: Doorkeeper::Application.first&.uid
+      parameter name: :client_secret, in: :formData, type: :string, required: true, default: Doorkeeper::Application.first&.secret
 
       response '200', 'token refreshed' do
         schema type: :object,

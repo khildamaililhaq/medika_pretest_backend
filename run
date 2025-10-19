@@ -39,7 +39,7 @@ function rails {
 }
 
 function test {
- cmd rspec "${@}"
+  _dc web bash -c "RAILS_ENV=test rspec ${@}"
 }
 
 function shell {
