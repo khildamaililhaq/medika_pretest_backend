@@ -36,6 +36,9 @@ gem "delayed_job_active_record", "~> 4.1"
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin Ajax possible
 # gem "rack-cors"
 
+gem "devise"
+gem "doorkeeper"
+
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
@@ -47,10 +50,12 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
   gem "rspec-rails", "~> 8.0"
   gem "rswag", "~> 2.16"
-end
-
-group :test do
   gem "database_cleaner"
   gem "factory_bot_rails", "~> 4.0"
   gem "shoulda-matchers", "~> 5.3"
+  gem "observer"
+  gem "faker"
+end
+
+group :test do
 end

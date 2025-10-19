@@ -1,0 +1,237 @@
+---
+swagger: '2.0'
+info:
+  title: API V1
+  version: v1
+securityDefinitions:
+  Bearer:
+    description: "..."
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  "/api/v1/auth/register":
+    post:
+      summary: Register a new user
+      tags:
+      - Authentication
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: user
+        in: body
+        schema:
+          type: object
+          properties:
+            user:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 6
+                password_confirmation:
+                  type: string
+                  minLength: 6
+              required:
+              - email
+              - password
+              - password_confirmation
+          required:
+          - user
+      responses:
+        '201':
+          description: user created
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+              user:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  email:
+                    type: string
+                    format: email
+                  created_at:
+                    type: string
+                    format: date-time
+                  updated_at:
+                    type: string
+                    format: date-time
+        '422':
+          description: unprocessable entity
+          schema:
+            type: object
+            properties:
+              errors:
+                type: array
+                items:
+                  type: string
+  "/oauth/revoke":
+    post:
+      summary: Revoke Token
+      tags:
+      - Authentication
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: token
+        in: formData
+        type: string
+        required: true
+      - name: client_id
+        in: formData
+        type: string
+        required: false
+      - name: client_secret
+        in: formData
+        type: string
+        required: false
+      responses:
+        '200':
+          description: token revoked
+          schema:
+            type: object
+            properties: {}
+        '403':
+          description: forbidden
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              error_description:
+                type: string
+  "/oauth/token/issue":
+    post:
+      summary: Issue Token
+      tags:
+      - Authentication
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: grant_type
+        in: formData
+        type: string
+        required: true
+        enum:
+        - password
+      - name: email
+        in: formData
+        type: string
+        required: true
+      - name: password
+        in: formData
+        type: string
+        required: true
+      - name: client_id
+        in: formData
+        type: string
+        required: true
+      - name: client_secret
+        in: formData
+        type: string
+        required: true
+      responses:
+        '200':
+          description: token issued
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+              token_type:
+                type: string
+                enum:
+                - Bearer
+              expires_in:
+                type: integer
+              refresh_token:
+                type: string
+              scope:
+                type: string
+              created_at:
+                type: integer
+        '401':
+          description: unauthorized
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              error_description:
+                type: string
+  "/oauth/token/refresh":
+    post:
+      summary: Refresh Token
+      tags:
+      - Authentication
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: grant_type
+        in: formData
+        type: string
+        required: true
+        enum:
+        - refresh_token
+      - name: refresh_token
+        in: formData
+        type: string
+        required: true
+      - name: client_id
+        in: formData
+        type: string
+        required: true
+      - name: client_secret
+        in: formData
+        type: string
+        required: true
+      responses:
+        '200':
+          description: token refreshed
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+              token_type:
+                type: string
+                enum:
+                - Bearer
+              expires_in:
+                type: integer
+              refresh_token:
+                type: string
+              scope:
+                type: string
+              created_at:
+                type: integer
+        '401':
+          description: unauthorized
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              error_description:
+                type: string
+servers:
+- url: https://{defaultHost}
+  variables:
+    defaultHost:
+      default: www.example.com
