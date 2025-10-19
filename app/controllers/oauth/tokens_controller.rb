@@ -1,6 +1,6 @@
 class Oauth::TokensController < ApplicationController
   before_action :application
-  
+
   def issue
     user = User.authenticate!(params[:email], params[:password])
     return render json: { error: "invalid_grant", error_description: "Invalid credentials" }, status: :unauthorized unless user

@@ -75,6 +75,298 @@ paths:
                 type: array
                 items:
                   type: string
+  "/api/v1/categories":
+    get:
+      summary: List categories
+      tags:
+      - Categories
+      produces:
+      - application/json
+      security:
+      - Bearer: {}
+      parameters:
+      - name: page
+        in: query
+        type: integer
+        description: Page number
+      - name: per_page
+        in: query
+        type: integer
+        description: Items per page
+      - name: q
+        in: query
+        schema:
+          type: object
+          properties:
+            name_cont:
+              type: string
+              description: Search by name containing
+            name_start:
+              type: string
+              description: Search by name starting with
+            name_end:
+              type: string
+              description: Search by name ending with
+            publish_eq:
+              type: boolean
+              description: Filter by publish status
+            publish_true:
+              type: boolean
+              description: Filter published categories
+            publish_false:
+              type: boolean
+              description: Filter unpublished categories
+            created_at_gteq:
+              type: string
+              format: date-time
+              description: Filter by created after or equal to
+            created_at_lteq:
+              type: string
+              format: date-time
+              description: Filter by created before or equal to
+            updated_at_gteq:
+              type: string
+              format: date-time
+              description: Filter by updated after or equal to
+            updated_at_lteq:
+              type: string
+              format: date-time
+              description: Filter by updated before or equal to
+          additionalProperties: true
+        style: deepObject
+        explode: true
+        description: Ransack search parameters
+      responses:
+        '200':
+          description: successful with publish filter
+          schema:
+            type: object
+            properties:
+              meta:
+                type: object
+                properties:
+                  per_page:
+                    type: integer
+                  current_page:
+                    type: integer
+                  next_page:
+                    type: integer
+                    nullable: true
+                  prev_page:
+                    type: integer
+                    nullable: true
+                  total_page:
+                    type: integer
+                  total_data:
+                    type: integer
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uuid
+                    name:
+                      type: string
+                    publish:
+                      type: boolean
+                    created_at:
+                      type: string
+                      format: date-time
+                    updated_at:
+                      type: string
+                      format: date-time
+                  required:
+                  - id
+                  - name
+                  - publish
+                  - created_at
+                  - updated_at
+        '401':
+          description: unauthorized
+    post:
+      summary: Create category
+      tags:
+      - Categories
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security:
+      - Bearer: {}
+      parameters:
+      - name: category
+        in: body
+        schema:
+          type: object
+          properties:
+            category:
+              type: object
+              properties:
+                name:
+                  type: string
+                publish:
+                  type: boolean
+              required:
+              - name
+          required:
+          - category
+      responses:
+        '201':
+          description: category created
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              publish:
+                type: boolean
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+            required:
+            - id
+            - name
+            - publish
+            - created_at
+            - updated_at
+        '422':
+          description: unprocessable entity
+          schema:
+            type: object
+            properties:
+              name:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: unauthorized
+  "/api/v1/categories/{id}":
+    parameters:
+    - name: id
+      in: path
+      type: string
+      format: uuid
+      description: Category ID
+      required: true
+    get:
+      summary: Show category
+      tags:
+      - Categories
+      produces:
+      - application/json
+      security:
+      - Bearer: {}
+      responses:
+        '200':
+          description: successful
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              publish:
+                type: boolean
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+            required:
+            - id
+            - name
+            - publish
+            - created_at
+            - updated_at
+        '404':
+          description: not found
+        '401':
+          description: unauthorized
+    patch:
+      summary: Update category
+      tags:
+      - Categories
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security:
+      - Bearer: {}
+      parameters:
+      - name: category
+        in: body
+        schema:
+          type: object
+          properties:
+            category:
+              type: object
+              properties:
+                name:
+                  type: string
+                publish:
+                  type: boolean
+          required:
+          - category
+      responses:
+        '200':
+          description: category updated
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              publish:
+                type: boolean
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+            required:
+            - id
+            - name
+            - publish
+            - created_at
+            - updated_at
+        '422':
+          description: unprocessable entity
+          schema:
+            type: object
+            properties:
+              name:
+                type: array
+                items:
+                  type: string
+        '401':
+          description: unauthorized
+        '404':
+          description: not found
+    delete:
+      summary: Delete category
+      tags:
+      - Categories
+      security:
+      - Bearer: {}
+      responses:
+        '204':
+          description: no content
+        '404':
+          description: not found
   "/oauth/token/issue":
     post:
       summary: Issue Token
