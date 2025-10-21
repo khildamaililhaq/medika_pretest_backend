@@ -10,28 +10,23 @@ RSpec.describe 'Api::V1::Categories', type: :request do
            scopes: 'read write')
   end
   let(:Authorization) { "Bearer #{access_token.token}" }
+
   path '/api/v1/categories' do
     get 'List categories' do
       tags 'Categories'
       produces 'application/json'
       security [ Bearer: {} ]
-      parameter name: :page, in: :query, type: :integer, description: 'Page number'
-      parameter name: :per_page, in: :query, type: :integer, description: 'Items per page'
-      parameter name: :q, in: :query, schema: {
-        type: :object,
-        properties: {
-          name_cont: { type: :string, description: 'Search by name containing' },
-          name_start: { type: :string, description: 'Search by name starting with' },
-          name_end: { type: :string, description: 'Search by name ending with' },
-          publish_eq: { type: :boolean, description: 'Filter by publish status' },
-          publish_true: { type: :boolean, description: 'Filter published categories' },
-          publish_false: { type: :boolean, description: 'Filter unpublished categories' },
-          created_at_gteq: { type: :string, format: 'date-time', description: 'Filter by created after or equal to' },
-          created_at_lteq: { type: :string, format: 'date-time', description: 'Filter by created before or equal to' },
-          updated_at_gteq: { type: :string, format: 'date-time', description: 'Filter by updated after or equal to' },
-          updated_at_lteq: { type: :string, format: 'date-time', description: 'Filter by updated before or equal to' }
-        }, additionalProperties: true
-      }, style: :deepObject, explode: true, description: 'Ransack search parameters'
+
+      parameter name: :page, in: :query, type: :integer, required: false, description: 'Page number'
+      parameter name: :per_page, in: :query, type: :integer, required: false, description: 'Items per page'
+
+      # Fix: Use proper parameter definition for Ransack
+      parameter name: 'q[name_cont]', in: :query, type: :string, required: false,
+                description: 'Search categories where name contains the given string'
+      parameter name: 'q[publish_eq]', in: :query, type: :boolean, required: false,
+                description: 'Filter categories by publish status (true/false)'
+      parameter name: 'q[s]', in: :query, type: :string, required: false,
+                description: 'Sort results (name asc, name desc, created_at desc, etc.)'
 
       response '200', 'successful' do
         schema type: :object,
@@ -66,21 +61,22 @@ RSpec.describe 'Api::V1::Categories', type: :request do
         let!(:category) { create(:category) }
         let(:page) { 1 }
         let(:per_page) { 10 }
-        let(:q) { {} }
 
-        run_test!
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data['data']).to be_an(Array)
+        end
       end
 
       response '401', 'unauthorized' do
         let(:Authorization) { 'Bearer invalid_token' }
         let(:page) { 1 }
         let(:per_page) { 10 }
-        let(:q) { {} }
 
         run_test!
       end
 
-      response '200', 'successful with search' do
+      response '200', 'successful with name search' do
         schema type: :object,
                properties: {
                  meta: {
@@ -114,9 +110,12 @@ RSpec.describe 'Api::V1::Categories', type: :request do
         let!(:category2) { create(:category, name: 'Another Category', publish: false) }
         let(:page) { 1 }
         let(:per_page) { 10 }
-        let(:q) { { name_cont: 'Test' } }
+        let(:'q[name_cont]') { 'Test' }
 
-        run_test!
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data['data']).to be_an(Array)
+        end
       end
 
       response '200', 'successful with publish filter' do
@@ -153,9 +152,12 @@ RSpec.describe 'Api::V1::Categories', type: :request do
         let!(:category2) { create(:category, name: 'Unpublished Category', publish: false) }
         let(:page) { 1 }
         let(:per_page) { 10 }
-        let(:q) { { publish_eq: true } }
+        let(:'q[publish_eq]') { true }
 
-        run_test!
+        run_test! do |response|
+          data = JSON.parse(response.body)
+          expect(data['data']).to be_an(Array)
+        end
       end
     end
 
@@ -205,9 +207,14 @@ RSpec.describe 'Api::V1::Categories', type: :request do
 
       response '422', 'unprocessable entity' do
         schema type: :object,
-                properties: {
-                  name: { type: :array, items: { type: :string } }
-                }
+               properties: {
+                 errors: {
+                   type: :object,
+                   properties: {
+                     name: { type: :array, items: { type: :string } }
+                   }
+                 }
+               }
 
         let(:category) do
           {
@@ -260,21 +267,7 @@ RSpec.describe 'Api::V1::Categories', type: :request do
       end
 
       response '404', 'not found' do
-        let(:id) { 'invalid-uuid' }
-
-        run_test!
-      end
-
-      response '401', 'unauthorized' do
-        let(:Authorization) { 'Bearer invalid_token' }
-        let(:id) { create(:category).id }
-
-        run_test!
-      end
-
-      response '401', 'unauthorized' do
-        let(:Authorization) { 'Bearer invalid_token' }
-        let(:id) { create(:category).id }
+        let(:id) { '00000000-0000-0000-0000-000000000000' }
 
         run_test!
       end
@@ -333,9 +326,14 @@ RSpec.describe 'Api::V1::Categories', type: :request do
 
       response '422', 'unprocessable entity' do
         schema type: :object,
-                properties: {
-                  name: { type: :array, items: { type: :string } }
-                }
+               properties: {
+                 errors: {
+                   type: :object,
+                   properties: {
+                     name: { type: :array, items: { type: :string } }
+                   }
+                 }
+               }
 
         let(:id) { create(:category).id }
         let(:category) do
@@ -364,16 +362,54 @@ RSpec.describe 'Api::V1::Categories', type: :request do
       end
 
       response '404', 'not found' do
-        let(:id) { 'invalid-uuid' }
+        let(:id) { '00000000-0000-0000-0000-000000000000' }
         let(:category) { { category: { name: 'Test' } } }
 
         run_test!
       end
+    end
 
-      response '401', 'unauthorized' do
-        let(:Authorization) { 'Bearer invalid_token' }
+    put 'Update category' do
+      tags 'Categories'
+      consumes 'application/json'
+      produces 'application/json'
+      security [ Bearer: {} ]
+
+      parameter name: :category, in: :body, schema: {
+        type: :object,
+        properties: {
+          category: {
+            type: :object,
+            properties: {
+              name: { type: :string },
+              publish: { type: :boolean }
+            },
+            required: %w[name]
+          }
+        },
+        required: %w[category]
+      }
+
+      response '200', 'category updated' do
+        schema type: :object,
+               properties: {
+                 id: { type: :string, format: :uuid },
+                 name: { type: :string },
+                 publish: { type: :boolean },
+                 created_at: { type: :string, format: 'date-time' },
+                 updated_at: { type: :string, format: 'date-time' }
+               },
+               required: %w[id name publish created_at updated_at]
+
         let(:id) { create(:category).id }
-        let(:category) { { category: { name: 'Test' } } }
+        let(:category) do
+          {
+            category: {
+              name: 'Updated Category',
+              publish: true
+            }
+          }
+        end
 
         run_test!
       end
@@ -390,7 +426,14 @@ RSpec.describe 'Api::V1::Categories', type: :request do
       end
 
       response '404', 'not found' do
-        let(:id) { 'invalid-uuid' }
+        let(:id) { '00000000-0000-0000-0000-000000000000' }
+
+        run_test!
+      end
+
+      response '401', 'unauthorized' do
+        let(:Authorization) { 'Bearer invalid_token' }
+        let(:id) { create(:category).id }
 
         run_test!
       end

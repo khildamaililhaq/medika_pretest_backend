@@ -88,54 +88,28 @@ paths:
       - name: page
         in: query
         type: integer
+        required: false
         description: Page number
       - name: per_page
         in: query
         type: integer
+        required: false
         description: Items per page
-      - name: q
+      - name: q[name_cont]
         in: query
-        schema:
-          type: object
-          properties:
-            name_cont:
-              type: string
-              description: Search by name containing
-            name_start:
-              type: string
-              description: Search by name starting with
-            name_end:
-              type: string
-              description: Search by name ending with
-            publish_eq:
-              type: boolean
-              description: Filter by publish status
-            publish_true:
-              type: boolean
-              description: Filter published categories
-            publish_false:
-              type: boolean
-              description: Filter unpublished categories
-            created_at_gteq:
-              type: string
-              format: date-time
-              description: Filter by created after or equal to
-            created_at_lteq:
-              type: string
-              format: date-time
-              description: Filter by created before or equal to
-            updated_at_gteq:
-              type: string
-              format: date-time
-              description: Filter by updated after or equal to
-            updated_at_lteq:
-              type: string
-              format: date-time
-              description: Filter by updated before or equal to
-          additionalProperties: true
-        style: deepObject
-        explode: true
-        description: Ransack search parameters
+        type: string
+        required: false
+        description: Search categories where name contains the given string
+      - name: q[publish_eq]
+        in: query
+        type: boolean
+        required: false
+        description: Filter categories by publish status (true/false)
+      - name: q[s]
+        in: query
+        type: string
+        required: false
+        description: Sort results (name asc, name desc, created_at desc, etc.)
       responses:
         '200':
           description: successful with publish filter
@@ -242,10 +216,13 @@ paths:
           schema:
             type: object
             properties:
-              name:
-                type: array
-                items:
-                  type: string
+              errors:
+                type: object
+                properties:
+                  name:
+                    type: array
+                    items:
+                      type: string
         '401':
           description: unauthorized
   "/api/v1/categories/{id}":
@@ -348,14 +325,69 @@ paths:
           schema:
             type: object
             properties:
-              name:
-                type: array
-                items:
-                  type: string
+              errors:
+                type: object
+                properties:
+                  name:
+                    type: array
+                    items:
+                      type: string
         '401':
           description: unauthorized
         '404':
           description: not found
+    put:
+      summary: Update category
+      tags:
+      - Categories
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      security:
+      - Bearer: {}
+      parameters:
+      - name: category
+        in: body
+        schema:
+          type: object
+          properties:
+            category:
+              type: object
+              properties:
+                name:
+                  type: string
+                publish:
+                  type: boolean
+              required:
+              - name
+          required:
+          - category
+      responses:
+        '200':
+          description: category updated
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+              name:
+                type: string
+              publish:
+                type: boolean
+              created_at:
+                type: string
+                format: date-time
+              updated_at:
+                type: string
+                format: date-time
+            required:
+            - id
+            - name
+            - publish
+            - created_at
+            - updated_at
     delete:
       summary: Delete category
       tags:
@@ -367,6 +399,8 @@ paths:
           description: no content
         '404':
           description: not found
+        '401':
+          description: unauthorized
   "/oauth/token/issue":
     post:
       summary: Issue Token
@@ -395,12 +429,12 @@ paths:
         in: formData
         type: string
         required: true
-        default: 3Y4wAY0SvABC4YYEtzw_6bjnyYUiwypTVVGQvVu7Yes
+        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
       - name: client_secret
         in: formData
         type: string
         required: true
-        default: u8SnKuATY7GoWajXak_vV6olrdzOJM5IGJ7bLtgIUX4
+        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
       responses:
         '200':
           description: token issued
@@ -448,12 +482,12 @@ paths:
         in: formData
         type: string
         required: false
-        default: 3Y4wAY0SvABC4YYEtzw_6bjnyYUiwypTVVGQvVu7Yes
+        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
       - name: client_secret
         in: formData
         type: string
         required: false
-        default: u8SnKuATY7GoWajXak_vV6olrdzOJM5IGJ7bLtgIUX4
+        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
       responses:
         '200':
           description: token revoked
@@ -493,12 +527,12 @@ paths:
         in: formData
         type: string
         required: true
-        default: 3Y4wAY0SvABC4YYEtzw_6bjnyYUiwypTVVGQvVu7Yes
+        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
       - name: client_secret
         in: formData
         type: string
         required: true
-        default: u8SnKuATY7GoWajXak_vV6olrdzOJM5IGJ7bLtgIUX4
+        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
       responses:
         '200':
           description: token refreshed

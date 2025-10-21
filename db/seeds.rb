@@ -48,7 +48,7 @@ category_names = [
 created_count = 0
 category_names.each do |name|
   category = Category.find_or_create_by!(name: name) do |cat|
-    cat.publish = [true, false].sample
+    cat.publish = [ true, false ].sample
     created_count += 1
   end
 end

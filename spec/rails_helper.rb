@@ -72,22 +72,25 @@ Shoulda::Matchers.configure do |config|
 end
 
 RSpec.configure do |config|
-  # [...]
-  config.include RequestSpecHelper
-  # add 'FactoryBot' methods
-  config.include FactoryBot::Syntax::Methods
+   # [...]
+   config.include RequestSpecHelper
+   # add 'FactoryBot' methods
+   config.include FactoryBot::Syntax::Methods
 
-  # start by truncating all the table but then use the faster transaction strategy for rest of the time.
-  config.before(:suite) do
-    DatabaseCleaner[:active_record].clean_with(:truncation, except: %w[ar_internal_metadata])
-    DatabaseCleaner[:active_record].strategy = :transaction
-  end
+   # Only configure DatabaseCleaner for test environment
+   if Rails.env.test?
+     # start by truncating all the table but then use the faster transaction strategy for rest of the time.
+     config.before(:suite) do
+       DatabaseCleaner[:active_record].clean_with(:truncation, except: %w[ar_internal_metadata])
+       DatabaseCleaner[:active_record].strategy = :transaction
+     end
 
-  # start the transaction strategy as examples are run
-  config.around(:each) do |example|
-    DatabaseCleaner[:active_record].cleaning do
-      example.run
-    end
-  end
-  # [...]
-end
+     # start the transaction strategy as examples are run
+     config.around(:each) do |example|
+       DatabaseCleaner[:active_record].cleaning do
+         example.run
+       end
+     end
+   end
+   # [...]
+ end
