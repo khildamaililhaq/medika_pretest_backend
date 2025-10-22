@@ -1,3 +1,3 @@
 class ApplicationController < ActionController::API
-  extend SerializerGenerator
+  include SerializerGenerator
 end

@@ -55,3 +55,27 @@ end
 
 puts "Created #{created_count} categories successfully!"
 puts "Total categories in database: #{Category.count}"
+
+# Create sample products for development and testing
+puts "Creating sample products..."
+
+# Define sample product names
+product_names = [
+  "Wireless Bluetooth Headphones", "Smartphone Case", "Running Shoes", "Coffee Maker",
+  "Yoga Mat", "LED Desk Lamp", "Stainless Steel Water Bottle", "Notebook Set",
+  "Wireless Mouse", "Portable Charger", "Resistance Bands", "Digital Camera",
+  "Ceramic Mug Set", "Fitness Tracker", "Board Game Collection", "Essential Oil Diffuser",
+  "Backpack", "Sunglasses", "Plant Pot Set", "Bluetooth Speaker"
+]
+
+# Create products with random category assignment
+created_product_count = 0
+product_names.each do |name|
+  product = Product.find_or_create_by!(name: name) do |prod|
+    prod.category = Category.all.sample
+    created_product_count += 1
+  end
+end
+
+puts "Created #{created_product_count} products successfully!"
+puts "Total products in database: #{Product.count}"
