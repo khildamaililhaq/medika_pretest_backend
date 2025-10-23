@@ -49,6 +49,10 @@ RSpec.describe 'Api::V1::Products', type: :request do
                        id: { type: :string, format: :uuid },
                        name: { type: :string },
                        publish: { type: :boolean },
+                       category: { type: :object, properties: {
+                         id: { type: :string, format: :uuid },
+                         name: { type: :string }
+                       } },
                        category_id: { type: :string, format: :uuid },
                        created_at: { type: :string, format: 'date-time' },
                        updated_at: { type: :string, format: 'date-time' }
@@ -143,6 +147,10 @@ RSpec.describe 'Api::V1::Products', type: :request do
                        id: { type: :string, format: :uuid },
                        name: { type: :string },
                        publish: { type: :boolean },
+                       category: { type: :object, properties: {
+                         id: { type: :string, format: :uuid },
+                         name: { type: :string }
+                       } },
                        category_id: { type: :string, format: :uuid },
                        created_at: { type: :string, format: 'date-time' },
                        updated_at: { type: :string, format: 'date-time' }
@@ -264,6 +272,10 @@ RSpec.describe 'Api::V1::Products', type: :request do
                  id: { type: :string, format: :uuid },
                  name: { type: :string },
                  publish: { type: :boolean },
+                 category: { type: :object, properties: {
+                         id: { type: :string, format: :uuid },
+                         name: { type: :string }
+                       } },
                  category_id: { type: :string, format: :uuid },
                  created_at: { type: :string, format: 'date-time' },
                  updated_at: { type: :string, format: 'date-time' }

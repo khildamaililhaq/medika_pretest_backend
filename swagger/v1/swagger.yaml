@@ -401,167 +401,6 @@ paths:
           description: not found
         '401':
           description: unauthorized
-  "/oauth/token/issue":
-    post:
-      summary: Issue Token
-      tags:
-      - Authentication
-      consumes:
-      - application/x-www-form-urlencoded
-      produces:
-      - application/json
-      parameters:
-      - name: grant_type
-        in: formData
-        type: string
-        required: true
-        enum:
-        - password
-      - name: email
-        in: formData
-        type: string
-        required: true
-      - name: password
-        in: formData
-        type: string
-        required: true
-      - name: client_id
-        in: formData
-        type: string
-        required: true
-        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
-      - name: client_secret
-        in: formData
-        type: string
-        required: true
-        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
-      responses:
-        '200':
-          description: token issued
-          schema:
-            type: object
-            properties:
-              access_token:
-                type: string
-              token_type:
-                type: string
-                enum:
-                - Bearer
-              expires_in:
-                type: integer
-              refresh_token:
-                type: string
-              scope:
-                type: string
-              created_at:
-                type: integer
-        '401':
-          description: unauthorized
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              error_description:
-                type: string
-  "/oauth/revoke":
-    post:
-      summary: Revoke Token
-      tags:
-      - Authentication
-      consumes:
-      - application/x-www-form-urlencoded
-      produces:
-      - application/json
-      parameters:
-      - name: token
-        in: formData
-        type: string
-        required: true
-      - name: client_id
-        in: formData
-        type: string
-        required: false
-        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
-      - name: client_secret
-        in: formData
-        type: string
-        required: false
-        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
-      responses:
-        '200':
-          description: token revoked
-          schema:
-            type: object
-            properties: {}
-        '403':
-          description: forbidden
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              error_description:
-                type: string
-  "/oauth/token/refresh":
-    post:
-      summary: Refresh Token
-      tags:
-      - Authentication
-      consumes:
-      - application/x-www-form-urlencoded
-      produces:
-      - application/json
-      parameters:
-      - name: grant_type
-        in: formData
-        type: string
-        required: true
-        enum:
-        - refresh_token
-      - name: refresh_token
-        in: formData
-        type: string
-        required: true
-      - name: client_id
-        in: formData
-        type: string
-        required: true
-        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
-      - name: client_secret
-        in: formData
-        type: string
-        required: true
-        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
-      responses:
-        '200':
-          description: token refreshed
-          schema:
-            type: object
-            properties:
-              access_token:
-                type: string
-              token_type:
-                type: string
-                enum:
-                - Bearer
-              expires_in:
-                type: integer
-              refresh_token:
-                type: string
-              scope:
-                type: string
-              created_at:
-                type: integer
-        '401':
-          description: unauthorized
-          schema:
-            type: object
-            properties:
-              error:
-                type: string
-              error_description:
-                type: string
   "/api/v1/products":
     get:
       summary: List products
@@ -632,6 +471,14 @@ paths:
                       type: string
                     publish:
                       type: boolean
+                    category:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          format: uuid
+                        name:
+                          type: string
                     category_id:
                       type: string
                       format: uuid
@@ -752,6 +599,14 @@ paths:
                 type: string
               publish:
                 type: boolean
+              category:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  name:
+                    type: string
               category_id:
                 type: string
                 format: uuid
@@ -917,6 +772,167 @@ paths:
           description: not found
         '401':
           description: unauthorized
+  "/oauth/token/issue":
+    post:
+      summary: Issue Token
+      tags:
+      - Authentication
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: grant_type
+        in: formData
+        type: string
+        required: true
+        enum:
+        - password
+      - name: email
+        in: formData
+        type: string
+        required: true
+      - name: password
+        in: formData
+        type: string
+        required: true
+      - name: client_id
+        in: formData
+        type: string
+        required: true
+        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
+      - name: client_secret
+        in: formData
+        type: string
+        required: true
+        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
+      responses:
+        '200':
+          description: token issued
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+              token_type:
+                type: string
+                enum:
+                - Bearer
+              expires_in:
+                type: integer
+              refresh_token:
+                type: string
+              scope:
+                type: string
+              created_at:
+                type: integer
+        '401':
+          description: unauthorized
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              error_description:
+                type: string
+  "/oauth/revoke":
+    post:
+      summary: Revoke Token
+      tags:
+      - Authentication
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: token
+        in: formData
+        type: string
+        required: true
+      - name: client_id
+        in: formData
+        type: string
+        required: false
+        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
+      - name: client_secret
+        in: formData
+        type: string
+        required: false
+        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
+      responses:
+        '200':
+          description: token revoked
+          schema:
+            type: object
+            properties: {}
+        '403':
+          description: forbidden
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              error_description:
+                type: string
+  "/oauth/token/refresh":
+    post:
+      summary: Refresh Token
+      tags:
+      - Authentication
+      consumes:
+      - application/x-www-form-urlencoded
+      produces:
+      - application/json
+      parameters:
+      - name: grant_type
+        in: formData
+        type: string
+        required: true
+        enum:
+        - refresh_token
+      - name: refresh_token
+        in: formData
+        type: string
+        required: true
+      - name: client_id
+        in: formData
+        type: string
+        required: true
+        default: Aptt8Gz77Jc-R4x6wEMgF6z2VindtgAONBp4UsTDvOc
+      - name: client_secret
+        in: formData
+        type: string
+        required: true
+        default: my885L3cwCVms_d1oWg3h8NPb6wftuBUF9lIga5QuA8
+      responses:
+        '200':
+          description: token refreshed
+          schema:
+            type: object
+            properties:
+              access_token:
+                type: string
+              token_type:
+                type: string
+                enum:
+                - Bearer
+              expires_in:
+                type: integer
+              refresh_token:
+                type: string
+              scope:
+                type: string
+              created_at:
+                type: integer
+        '401':
+          description: unauthorized
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              error_description:
+                type: string
 servers:
 - url: https://{defaultHost}
   variables:
