@@ -464,4 +464,39 @@ RSpec.describe 'Api::V1::Products', type: :request do
       end
     end
   end
+
+  path '/api/v1/products/export' do
+    get 'Export products to Excel' do
+      tags 'Products'
+      produces 'application/vnd.ms-excel'
+      security [ Bearer: {} ]
+
+      parameter name: 'q[name_cont]', in: :query, type: :string, required: false,
+                description: 'Search products where name contains the given string'
+      parameter name: 'q[publish_eq]', in: :query, type: :boolean, required: false,
+                description: 'Filter products by publish status (true/false)'
+      parameter name: 'q[created_at_gteq]', in: :query, type: :string, format: 'date-time', required: false,
+                description: 'Filter products created after or on this date (greater than or equal)'
+      parameter name: 'q[created_at_lteq]', in: :query, type: :string, format: 'date-time', required: false,
+                description: 'Filter products created before or on this date (less than or equal)'
+      parameter name: 'q[s]', in: :query, type: :string, required: false,
+                description: 'Sort results (name asc, name desc, created_at desc, etc.)'
+
+      response '200', 'successful' do
+        let!(:product) { create(:product) }
+
+        run_test! do |response|
+          expect(response.content_type).to eq('application/vnd.ms-excel')
+          expect(response.headers['Content-Disposition']).to include('attachment; filename="products_')
+          expect(response.headers['Content-Disposition']).to include('.xls"')
+        end
+      end
+
+      response '401', 'unauthorized' do
+        let(:Authorization) { 'Bearer invalid_token' }
+
+        run_test!
+      end
+    end
+  end
 end
