@@ -52,7 +52,7 @@ group :development, :test do
   gem "rswag", "~> 2.16"
   gem "database_cleaner"
   gem "factory_bot_rails", "~> 4.0"
-  gem "shoulda-matchers", "~> 5.3"
+  gem "shoulda-matchers", "~> 6.5"
   gem "observer"
   gem "faker"
 end
