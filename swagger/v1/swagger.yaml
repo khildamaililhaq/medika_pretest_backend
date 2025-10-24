@@ -772,6 +772,50 @@ paths:
           description: not found
         '401':
           description: unauthorized
+  "/api/v1/products/export":
+    get:
+      summary: Export products to Excel
+      tags:
+      - Products
+      produces:
+      - application/vnd.ms-excel
+      security:
+      - Bearer: {}
+      parameters:
+      - name: q[name_cont]
+        in: query
+        type: string
+        required: false
+        description: Search products where name contains the given string
+      - name: q[publish_eq]
+        in: query
+        type: boolean
+        required: false
+        description: Filter products by publish status (true/false)
+      - name: q[created_at_gteq]
+        in: query
+        type: string
+        format: date-time
+        required: false
+        description: Filter products created after or on this date (greater than or
+          equal)
+      - name: q[created_at_lteq]
+        in: query
+        type: string
+        format: date-time
+        required: false
+        description: Filter products created before or on this date (less than or
+          equal)
+      - name: q[s]
+        in: query
+        type: string
+        required: false
+        description: Sort results (name asc, name desc, created_at desc, etc.)
+      responses:
+        '200':
+          description: successful
+        '401':
+          description: unauthorized
   "/oauth/token/issue":
     post:
       summary: Issue Token

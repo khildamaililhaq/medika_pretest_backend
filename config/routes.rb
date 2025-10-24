@@ -7,7 +7,11 @@ Rails.application.routes.draw do
       post "auth/register", to: "auth#register"
       post "auth/login", to: "auth#login"
       resources :categories
-      resources :products
+      resources :products do
+        collection do
+          get :export
+        end
+      end
     end
   end
 

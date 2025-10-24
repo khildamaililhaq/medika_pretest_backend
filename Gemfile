@@ -64,3 +64,4 @@ gem "active_model_serializers", "~> 0.10.15"
 gem "kaminari", "~> 1.2"
 
 gem "ransack", "~> 4.4"
+gem "spreadsheet", "~> 1.3"
